@@ -1,0 +1,485 @@
+@import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Source+Code+Pro&display=swap');
+
+
+main {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+}
+
+#top-nav {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100vw;
+    height: 50px;
+    background-color: #535c7e;
+}
+
+#nav-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 10px;
+} 
+
+#nav-title a {
+    font-size: 25px;
+    font-family: 'Permanent Marker', cursive;
+    color: #4e525f;
+    cursor: pointer;
+}
+
+
+
+.contents {
+    display: flex;
+    justify-content: center;
+    width: 100vw;
+    margin: 10px 0;
+}
+
+#links-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 94%;
+    border: 1px solid #535c7e;
+    border-radius: 20px;
+}
+
+#links-content > * {
+    margin-bottom: 10px;
+}
+
+.header-after {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 56px;
+}
+
+#menu-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 94%;
+}
+
+#title-header-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 30px;
+    padding: 10px;
+    font-size: 25px;
+    font-family: 'Source Code Pro', monospace;
+    color: #4e525f;
+}
+
+.func-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 90px;
+    height: 30px;
+    padding: 3px;
+    margin: 10px;
+    outline: none;
+    border: none;
+    background-color: #959dbe;
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: 'Source Code Pro', monospace;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 300ms cubic-bezier(.23, 1, 0.32, 1);
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    will-change: transform;
+}
+
+.func-btn:hover {
+    box-shadow: #535c7e 0 8px 15px;
+    background-color: #bec2d3;
+    transform: translateY(-2px);
+}
+
+.func-btn:active {
+    box-shadow: none;
+    background-color: #959dbe;
+    transform: translateY(0);
+}
+
+.header-after::after {
+    content: "";
+    width: 94%;
+    height: 1px;
+    margin-bottom: 5px;
+    background-color: #535c7e;
+     
+}
+
+#cards-grid {
+    display: grid;
+    grid: auto-flow 55px / repeat(auto-fit, 200px);
+    gap: 5px 5px;
+    justify-content: space-evenly;
+    justify-items: center;
+    width: 94%;
+}
+
+.slim-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    position: relative;
+    width:190px;
+    height: 40px;
+    padding: 5px;
+    border-bottom: 3px solid transparent;
+    border-radius: 30px;
+    text-decoration: none;
+    cursor: pointer;
+    user-select: none;
+}
+
+.slim-card:hover {
+    background: linear-gradient(to right, #bec2d3,#bec2d3) padding-box;
+
+}
+
+.icon-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+}
+
+.icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50px;
+}
+
+.card-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 30px;
+    padding: 5px;
+}
+
+.card-title span {
+    font-size: 15px;
+    font-family: 'Permanent Marker', cursive;
+    color: #4e525f;
+    white-space: nowrap;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-edit-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    position: relative;
+}
+
+.card-edit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    position:absolute;
+}
+
+.card-edit svg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 10px;
+    height: 10px;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.slim-card:hover .card-edit-content .card-edit svg{
+    display: block;
+    opacity: 0.8;
+    transition: 1s;
+}
+
+/* Overlay */
+
+#overlay {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    background: rgb(0 0 0 / 20%);
+    width: 100vw;
+    height: 100vh;
+    z-index: 10;
+}
+
+/* Overlay link settings */
+
+#link-settings-box {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 500px;
+    height: 296px;
+    border-radius: 20px;
+    background: #bec2d3;
+}
+
+#title-edit-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 490px;
+    height: 40px;
+    padding: 5px;
+}
+
+#category-card {
+    padding: 8px;
+}
+
+#category-card span {
+    font-size: 30px;
+}
+
+#out-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 8px;
+    cursor: pointer;
+    user-select: none;
+}
+
+#out-card::before, #out-card::after {
+    content: "";
+    width: 25px;
+    height: 1px;
+    background-color: #535c7e;
+}
+
+#out-card::before {
+    position: absolute;
+    transform: rotate(45deg);
+}
+
+#out-card::after {
+    position: absolute;
+    transform: rotate(135deg);
+}
+
+
+#up-settings, #down-settings {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 490px;
+    height: 80px;
+    padding: 5px;
+}
+
+#title-settings, #tag-settings, #link-settings {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 8px;
+    height: 64px;
+}
+
+#title-settings, #tag-settings {
+    width: 225px;
+}
+
+#link-settings {
+    width: 470px;
+}
+
+#title-settings label, #title-settings-field,
+#tag-settings label, #tag-settings-field,
+#link-settings label, #link-settings-field,
+#category-card span {
+    font-family: 'Source Code Pro', monospace;
+    color: #4e525f;
+    font-weight: 600;
+}
+
+#title-settings label, 
+#tag-settings > label, 
+#link-settings label {
+    font-size: 22px;
+    padding:  0 5px 5px 5px;
+}
+
+#title-settings-field,
+#tag-settings-field,
+#link-settings-field {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    outline: none;
+    border: none;
+    background-color: #959dbe;
+    width: -webkit-fill-available;
+    height: 26px;
+    padding: 2.5px 5px;
+}
+
+#confirm-changes {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 490px;
+    padding: 5px;
+}
+
+/* Tag */
+.selected-tag {
+    width: min-content ;
+    padding: 2px;
+    margin: 2px;
+    background-color: #676d85;
+    font-size: 12px;
+}
+
+#add-tag {
+    width: 26px;
+    height: 26px;
+    border: none;
+    padding: 2.5px 0 2.5px 5px;
+    background: #676d85 content-box;
+}
+
+#add-tag::before, #add-tag::after {
+    content: "";
+    width: 15px;
+    height: 1px;
+    background-color: #000;
+}
+
+#add-tag::before {
+    position: absolute;
+    transform: rotate(90deg);
+}
+
+#add-tag::after {
+    position: absolute;
+    transform: rotate(180deg);
+}
+
+
+.select-tags {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 195px;
+    height: 26px;
+    padding-right: 4px;
+}
+
+#dialog {
+    border: none;
+    position: relative;
+    margin-top: 4px;
+    z-index: 1;
+}
+
+#dialog-content {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    width: 220px;
+    padding: 2.5px;
+    border: none;
+    background-color: #959dbe;
+}
+
+#add-new-tag > div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: relative;
+}
+
+#add-new-tag input[type=text] {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 195px;
+    height: 20px;
+    background-color: #4e525f;
+    border: none;
+}
+
+.tag {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: 20px;
+    margin: 2.5px;
+}
+
+.check-tag {
+    width: 20px;
+    height: 20px;
+    margin: 2.5px;
+    border: none;
+}
+
+.tag-name {
+    width: 175px;
+    height: 20px;
+    margin: 2.5px;
+}
+
+.color-tag {
+    width: 20px;
+    height: 20px;
+    margin: 2.5px;
+    border: none;
+}
+
+#tag-btn-content {
+    display: flex;
+    flex-direction: row;
+}
+
+.tag-btn {
+    width: 100px;
+    height: 25px;
+    margin: 2.5px;
+    text-align: center;
+    border: none;
+    margin: 5px;
+    font-family: 'Source Code Pro', monospace;
+    color: #4e525f;
+    font-weight: 600;
+}

@@ -1,0 +1,21 @@
+*,
+*:after,
+*:before {
+    margin: 0;
+    padding: 0;
+
+    text-decoration: none;
+    box-shadow:border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+body{
+    font-size: 100%;
+    list-style-type: none;
+    background: #676d85;
+    overflow-x: hidden;
+}
+
+:root {
+    --white: #FFFFFF;
+}
