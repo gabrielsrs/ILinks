@@ -6,6 +6,8 @@ const outCard = document.querySelector('#out-card')
 const removeLink = document.querySelector('#remove-btn')
 const saveLink = document.querySelector('#done-btn')
 const titleLink = document.querySelector('#title-settings-field')
+const contentTag = document.querySelector("#tag-settings")
+const overlayTag = document.querySelector("#overlay-tag")
 const tagLink = document.querySelector('#tag-settings-field')
 const link = document.querySelector('#link-settings-field')
 const contentLinks = document.querySelector('#cards-grid')
@@ -24,18 +26,40 @@ const removeTag = document.querySelector('#remove-tag')
 const removeTagMsg = document.querySelector('#remove-tag-msg')
 let allTags = document.querySelectorAll(".tag")
 
-// Load the cards
-window.addEventListener('load', () => {
-  const dataLinks = JSON.parse(localStorage.getItem("links"))
-  for(item of dataLinks) {
-
-    loadData(item.name, item.link)
-    editCards()
+// Local Storage
+class LocalStorage {
+  constructor(type, newObject) {
+    this.type = type
+    this.newObject = newObject
   }
 
-  const storageTags = JSON.parse(localStorage.tags)
-  for(item in storageTags) {
-    loadTag(false, item, storageTags[item])
+  saveNewObject() {
+    localStorage.setItem(this.type, JSON.stringify(newObject))
+  }
+
+  getNewObject() {
+    return JSON.parse(localStorage.getItem(this.type))
+  }
+}
+
+// Load Local Storages
+window.addEventListener('load', () => {
+  const linksStorage = new LocalStorage(type = "links")
+  const resultLocalStorageLinks = linksStorage.getNewObject()
+  if(resultLocalStorageLinks) {
+    for(item of resultLocalStorageLinks) {
+
+      loadData(item.name, item.link)
+      editCards()
+    }
+  }
+
+  const tagsStorage = new LocalStorage(type = "tags")
+  const resultLocalStorageTags = tagsStorage.getNewObject()
+  if(resultLocalStorageTags) {
+    for(item in resultLocalStorageTags) {
+      loadTag(false, item, resultLocalStorageTags[item])
+    }
   }
 
   borderFilter()
@@ -45,6 +69,7 @@ window.addEventListener('load', () => {
 addNewLink.addEventListener('click', () => {
   categoryCard.removeChild(categoryCard.firstElementChild)
   categoryCard.appendChild(document.createElement('span')).innerText = 'Add Link'
+  // attTagsState()
   showOverlay()
 })
 
@@ -66,11 +91,11 @@ function editCards() {
     })
 
     item.addEventListener('click', () => {
-      previewTag(index)
+      tags = new LocalStorage("links")
+      previewTag(tags.getNewObject()[index].tag)
 
       categoryCard.removeChild(categoryCard.firstElementChild)
       categoryCard.appendChild(document.createElement('span')).innerText = 'Edit Link'
-      showOverlay()
 
       let linkCard = cards[index]
 
@@ -80,6 +105,8 @@ function editCards() {
 
       saveLink.dataset.index = index
       removeLink.dataset.index = index
+
+      showOverlay()
   })
   })
 
@@ -110,8 +137,9 @@ saveLink.addEventListener('click', (event) => {
       event.currentTarget.style.display = 'none'
     });
 
-    const allItems = JSON.parse(localStorage.getItem("links"))
-    localStorage.setItem("links", updateObject(titleLink.value, link.value, allItems, itemIndex))
+    const saveLocalStorage = new LocalStorage("links", updateObject(titleLink.value, link.value, allItems, itemIndex))
+    saveLocalStorage.saveNewObject()
+
     editCards()
   } else {
     newElement(titleLink, link)
@@ -121,9 +149,9 @@ saveLink.addEventListener('click', (event) => {
     cards[cards.length - 1].children[0].children[0].addEventListener("error", (event) => {
       event.currentTarget.style.display = 'none'
     });
-
-    const allItems = JSON.parse(localStorage.getItem("links"))
-    localStorage.setItem("links", createObject(titleLink.value, link.value, allItems))
+    
+    const saveLocalStorage = new LocalStorage("links", createObject(titleLink.value, link.value, allItems))
+    saveLocalStorage.saveNewObject()
     editCards()
   }
 
@@ -138,7 +166,11 @@ addTag.addEventListener("click", () => {
   } else {
     if(!removeTagMsg.hasAttribute("hidden")) {
       removeTagMsg.toggleAttribute('hidden')
+    } else if(overlayTag.hasAttribute("hidden")) {
+      overlayTag.toggleAttribute('hidden')
+      contentTag.classList.toggle("content-tag")
     }
+    
     attTagsState()
     showHideDialog("show")
     toggleAddTag.toggleAttribute('hidden')
@@ -151,9 +183,13 @@ addTag.addEventListener("click", () => {
 showTagsContent.addEventListener("click", () => {
   if(dialog.open) {
     showHideDialog("hide")
+    overlayTag.toggleAttribute('hidden')
+    contentTag.classList.toggle("content-tag")
   } else {
     attTagsState()
     showHideDialog("show")
+    overlayTag.toggleAttribute('hidden')
+    contentTag.classList.toggle("content-tag")
   }
   
   // removeDataState()
@@ -195,12 +231,13 @@ saveTags.addEventListener("click", () => {
       }
     })
 
+    // previewTag validating if ha ve index or not, same as else below
     attTagsState()
     removeTagMsg.toggleAttribute('hidden')
     removeDataState()
   } else { // check tag from a link
     const doneIndex = document.querySelector("#done-btn")
-    if(doneIndex.dataset['index']) {
+    if(doneIndex.dataset['index']) { // Existent cards
       const allTagsToSave = document.querySelectorAll('.tag')
       linkToSaveTag[parseInt(doneIndex.dataset['index'])].tag = []
 
@@ -209,8 +246,19 @@ saveTags.addEventListener("click", () => {
           linkToSaveTag[parseInt(doneIndex.dataset['index'])].tag.push(itemToSave.children[1].textContent)
         }
       })
-    } else {
 
+      previewTag(linkToSaveTag[parseInt(document.querySelector("#done-btn").dataset["index"])].tag)
+    } else { // when add card
+      const allTagsToSave = document.querySelectorAll('.tag')
+      display_tags = []
+
+      allTagsToSave.forEach(itemToSave => {
+        if(itemToSave.children[0].checked) {
+          display_tags.push(itemToSave.children[1].textContent)
+        }
+      })
+
+      previewTag(display_tags)
     }
     showHideDialog("hide")
   }
@@ -218,12 +266,10 @@ saveTags.addEventListener("click", () => {
   document.querySelectorAll('.tag').forEach(currentColor => {
     storageTags[currentColor.children[1].textContent] = currentColor.children[2].value
   })
-
   localStorage.setItem("tags", JSON.stringify(storageTags))
   localStorage.setItem("links", JSON.stringify(linkToSaveTag))
 
   borderFilter()
-  previewTag(parseInt(document.querySelector("#done-btn").dataset["index"]))
 })
 
 // Remove tag
@@ -315,10 +361,22 @@ function createObject(title, link, listLinks) {
   listLinks.push({
 		"name": `${title}`,
 		"link": `${link}`,
-		"tag": ["Music"]
+		"tag": createObjectTags()
 	}) 
 
   return JSON.stringify(listLinks)
+}
+
+// get tags
+function createObjectTags() {
+  const allTagsToSave = document.querySelectorAll('.tag')
+  tagToSave = []
+
+  allTagsToSave.forEach(itemToSave => {
+    if(itemToSave.children[0].checked) {
+      tagToSave.push(itemToSave.children[1].textContent)
+    }
+  }) 
 }
 
 // Show dialog
@@ -346,39 +404,57 @@ function removeDataState() {
 }
 
 // Check and uncheck tags
-function attTagsState() {
+function attTagsState(addTag=false) {
   const index = parseInt(document.querySelector("#done-btn").dataset['index'])
+  // const tagContentForAddLink = Array.from(document.querySelectorAll("#show>div"), (item) => item.textContent)
 
-  const titleCurrentLink = JSON.parse(localStorage.getItem("links"))[index].tag
+  const titleCurrentLink = JSON.parse(localStorage.getItem("links"))
   const storageTags = JSON.parse(localStorage.tags)
 
   allTags = document.querySelectorAll(".tag")
 
-  for(tagsItem in storageTags) {
-    if(titleCurrentLink.includes(tagsItem)) {
-      allTags.forEach(checkTag => {
-        if(checkTag.children[1].textContent == tagsItem) {
-          checkTag.children[0].checked = true
+  if(!isNaN(index)) {// for edit cards
+    for(tagsItem in storageTags) {
+        if(titleCurrentLink[index].tag.includes(tagsItem)) {
+          allTags.forEach(checkTag => {
+            if(checkTag.children[1].textContent == tagsItem) {
+              checkTag.children[0].checked = true
+            }
+          })
+        } else {
+          allTags.forEach(uncheck => {
+            if(uncheck.children[1].textContent == tagsItem) {
+              uncheck.children[0].checked = false
+            }
+          })
         }
-      })
-    } else {
-      allTags.forEach(uncheck => {
-        if(uncheck.children[1].textContent == tagsItem) {
-          uncheck.children[0].checked = false
-        }
-      })
+
     }
+  } 
+  else { // for add cards
+    allTags.forEach(uncheck => {
+      if(uncheck.children[1].textContent) {
+        uncheck.children[0].checked = false
+      }
+    })
   }
+  
 }
 
-function previewTag(index) {
-  const addTagPreView = JSON.parse(localStorage.getItem("links"))[index].tag
+function previewTag(list_tags) {
   showTagsContent.replaceChildren()
-  
-  addTagPreView.forEach(tagName => {
+
+  list_tags.forEach(tagName => {
     TagPreViewHtml(tagName)
   })
-  
+
+  // if(index) {
+  //   const addTagPreView = JSON.parse(localStorage.getItem("links"))[index].tag
+    
+  //   addTagPreView.forEach(tagName => {
+  //     TagPreViewHtml(tagName)
+  //   })
+  // }
 }
 
 // Load card html

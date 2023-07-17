@@ -145,6 +145,8 @@ main {
     width:190px;
     height: 40px;
     padding: 5px;
+    background: linear-gradient(to right, rgb(190, 194, 211), rgb(190, 194, 211)) padding-box padding-box, 
+                linear-gradient(to right, rgb(103, 109, 133) 0%, rgb(103, 109, 133) 100%) border-box border-box;
     border-bottom: 3px solid transparent;
     border-radius: 30px;
     text-decoration: none;
@@ -237,6 +239,18 @@ main {
     z-index: 10;
 }
 
+#overlay-tag {
+    /* display: none;
+    justify-content: center;
+    align-items: center; */
+    position: fixed;
+    background: rgb(0 0 0 / 20%);
+    width: 100vw;
+    height: 100vh;
+    z-index: 10;
+    top: 0;
+}
+
 /* Overlay link settings */
 
 #link-settings-box {
@@ -312,6 +326,12 @@ main {
     justify-content: flex-start;
     padding: 8px;
     height: 64px;
+}
+
+.content-tag {
+    z-index: 100;
+    background: #bec2d3;
+    border-radius: 5px;
 }
 
 #title-settings, #tag-settings {
