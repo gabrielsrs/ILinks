@@ -34,7 +34,7 @@ class LocalStorage {
   }
 
   saveNewObject() {
-    localStorage.setItem(this.type, JSON.stringify(newObject))
+    localStorage.setItem(this.type, JSON.stringify(this.newObject))
   }
 
   getNewObject() {
@@ -42,24 +42,35 @@ class LocalStorage {
   }
 }
 
+showTagsContent.addEventListener('wheel', (event) => {
+  event.preventDefault()
+
+  showTagsContent.scrollBy({
+    left: event.deltaY < 0 ? -7 : 7
+  })
+})
+
 // Load Local Storages
 window.addEventListener('load', () => {
-  const linksStorage = new LocalStorage(type = "links")
+  const linksStorage = new LocalStorage(type = "links", newObject=[])
   const resultLocalStorageLinks = linksStorage.getNewObject()
   if(resultLocalStorageLinks) {
     for(item of resultLocalStorageLinks) {
-
       loadData(item.name, item.link)
       editCards()
     }
+  } else if(resultLocalStorageLinks == null) {
+    linksStorage.saveNewObject()
   }
 
-  const tagsStorage = new LocalStorage(type = "tags")
+  const tagsStorage = new LocalStorage(type = "tags", newObject={})
   const resultLocalStorageTags = tagsStorage.getNewObject()
   if(resultLocalStorageTags) {
     for(item in resultLocalStorageTags) {
       loadTag(false, item, resultLocalStorageTags[item])
     }
+  } else if(resultLocalStorageTags == null) {
+    tagsStorage.saveNewObject()
   }
 
   borderFilter()
@@ -71,6 +82,7 @@ addNewLink.addEventListener('click', () => {
   categoryCard.appendChild(document.createElement('span')).innerText = 'Add Link'
   // attTagsState()
   showOverlay()
+  previewTag([])
 })
 
 
@@ -114,45 +126,97 @@ function editCards() {
 
 // Save changes on cards
 saveLink.addEventListener('click', (event) => {
+  getItems = new LocalStorage("links")
+  allItems = getItems.getNewObject()
+
   if(event.currentTarget.dataset['index']) {
-    let iconEdit 
+    if(titleLink.value.trim()) {
+      if(!link.value.trim()) {
+        link.value = ""
+        link.classList.add("placeholder-error")
+        return link.placeholder = "Link Not Found"
+      }
 
-    const itemIndex = parseInt(event.currentTarget.dataset['index'])
-    removeDataIndex()
+      let iconEdit
+      let temporaryLink
 
-    cards[itemIndex].href = link.value
-    
-    if(link.value) {
+      const itemIndex = parseInt(event.currentTarget.dataset['index'])
+      removeDataIndex()
+
+      if(!(link.value.slice(0, 4) == "http")) {
+        temporaryLink = `https://${link.value}`
+      } else {
+        temporaryLink = link.value
+      }
+
+      cards[itemIndex].href = temporaryLink
+      
       if(cards[itemIndex].children[0].children[0]){cards[itemIndex].children[0].children[0].remove()}
       iconEdit = cards[itemIndex].children[0].appendChild(document.createElement('img'))
       iconEdit.classList.add('icon')
-      iconEdit.src = `${link.value.slice(0, link.value.indexOf('/', 8))}/favicon.ico`
+      iconEdit.src = `${temporaryLink.slice(0, temporaryLink.indexOf('/', 8))}/favicon.ico`
       iconEdit.alt = "link-image"
+      
+      cards[itemIndex].children[1].children[0].innerHTML = titleLink.value
+      cards[itemIndex].children[1].children[0].title = titleLink.value
+
+      cards[itemIndex].children[0].children[0].addEventListener("error", (event) => {
+        event.currentTarget.style.display = 'none'
+      });
+      
+      titleLink.classList.remove("placeholder-error")
+      titleLink.removeAttribute("placeholder")
+      link.classList.remove("placeholder-error")
+      link.placeholder = "https://www.exemple.com"
+
+      const saveLocalStorage = new LocalStorage("links", updateObject(titleLink.value, temporaryLink, allItems, itemIndex))
+      saveLocalStorage.saveNewObject()
+
+      editCards()
+
+    } else {
+      titleLink.value = ""
+      titleLink.classList.add("placeholder-error")
+      return titleLink.placeholder = "Text Not Found"
     }
-    
-    cards[itemIndex].children[1].children[0].innerHTML = titleLink.value
-    cards[itemIndex].children[1].children[0].title = titleLink.value
-
-    cards[itemIndex].children[0].children[0].addEventListener("error", (event) => {
-      event.currentTarget.style.display = 'none'
-    });
-
-    const saveLocalStorage = new LocalStorage("links", updateObject(titleLink.value, link.value, allItems, itemIndex))
-    saveLocalStorage.saveNewObject()
-
-    editCards()
   } else {
-    newElement(titleLink, link)
+    if(titleLink.value.trim()) {
+      if(!link.value.trim()) {
+        link.value = ""
+        link.classList.add("placeholder-error")
+        return link.placeholder = "Link Not Found"
+      }
 
-    cards = document.querySelectorAll('.slim-card')
+      let temporaryLink
+      if(!(link.value.slice(0, 4) == "http")) {
+        temporaryLink = `https://${link.value}`
+      } else {
+        temporaryLink = link.value
+      }
 
-    cards[cards.length - 1].children[0].children[0].addEventListener("error", (event) => {
-      event.currentTarget.style.display = 'none'
-    });
-    
-    const saveLocalStorage = new LocalStorage("links", createObject(titleLink.value, link.value, allItems))
-    saveLocalStorage.saveNewObject()
-    editCards()
+      newElement(titleLink.value, temporaryLink)
+
+      cards = document.querySelectorAll('.slim-card')
+
+      cards[cards.length - 1].children[0].children[0].addEventListener("error", (event) => {
+        event.currentTarget.style.display = 'none'
+      });
+
+      titleLink.classList.remove("placeholder-error")
+      titleLink.removeAttribute("placeholder")
+      link.classList.remove("placeholder-error")
+      link.placeholder = "https://www.exemple.com"
+      
+      const saveLocalStorage = new LocalStorage("links", createObject(titleLink.value, temporaryLink, allItems))
+      saveLocalStorage.saveNewObject()
+
+      editCards()
+      borderFilter()
+    } else {
+      titleLink.value = ""
+      titleLink.classList.add("placeholder-error")
+      return titleLink.placeholder = "Text Not Found"
+    }
   }
 
   cleanOverlay()
@@ -166,9 +230,6 @@ addTag.addEventListener("click", () => {
   } else {
     if(!removeTagMsg.hasAttribute("hidden")) {
       removeTagMsg.toggleAttribute('hidden')
-    } else if(overlayTag.hasAttribute("hidden")) {
-      overlayTag.toggleAttribute('hidden')
-      contentTag.classList.toggle("content-tag")
     }
     
     attTagsState()
@@ -176,23 +237,19 @@ addTag.addEventListener("click", () => {
     toggleAddTag.toggleAttribute('hidden')
   }
 
-  removeDataState()
+  // removeDataState()
 })
 
 // Edit tags
 showTagsContent.addEventListener("click", () => {
   if(dialog.open) {
     showHideDialog("hide")
-    overlayTag.toggleAttribute('hidden')
-    contentTag.classList.toggle("content-tag")
   } else {
     attTagsState()
     showHideDialog("show")
-    overlayTag.toggleAttribute('hidden')
-    contentTag.classList.toggle("content-tag")
   }
   
-  // removeDataState()
+  // removeDataState() *****
 })
 
 // Click save tags
@@ -217,7 +274,7 @@ saveTags.addEventListener("click", () => {
     } else {
       newTagName.placeholder = "Name not add"
     }
-  } else if(saveTags.dataset.state == "remove") { // remove tag (msg remove active)
+  } else if(!removeTagMsg.hasAttribute("hidden")) { // remove tag (msg remove active) saveTags.dataset.state == "remove"
     allTags.forEach(item => {
       if(item.children[0].checked) {
         delete storageTags[item.children[1].textContent]
@@ -234,8 +291,8 @@ saveTags.addEventListener("click", () => {
     // previewTag validating if ha ve index or not, same as else below
     attTagsState()
     removeTagMsg.toggleAttribute('hidden')
-    removeDataState()
-  } else { // check tag from a link
+    // removeDataState()
+  } else { // check tag from a link (save without remove and add tag)
     const doneIndex = document.querySelector("#done-btn")
     if(doneIndex.dataset['index']) { // Existent cards
       const allTagsToSave = document.querySelectorAll('.tag')
@@ -288,7 +345,7 @@ removeTag.addEventListener("click", () => {
     item.children[0].checked = false
   })
 
-  removeDataState()
+  // removeDataState()
 })
 
 
@@ -297,6 +354,11 @@ outCard.addEventListener('click', () => {
   removeDataIndex()
   hideOverlay()
   cleanOverlay()
+
+  titleLink.classList.remove("placeholder-error")
+  titleLink.removeAttribute("placeholder")
+  link.classList.remove("placeholder-error")
+  link.placeholder = "https://www.exemple.com"
 })
 
 // Remove a card or clean in add card state
@@ -308,7 +370,13 @@ removeLink.addEventListener('click', (event) => {
     allItems.splice(parseInt(event.currentTarget.dataset['index']), 1)
     localStorage.setItem("links", JSON.stringify(allItems))
     removeDataIndex()
+    editCards()
   }
+
+  titleLink.classList.remove("placeholder-error")
+  titleLink.removeAttribute("placeholder")
+  link.classList.remove("placeholder-error")
+  link.placeholder = "https://www.exemple.com"
 
   hideOverlay()
   cleanOverlay()
@@ -353,7 +421,7 @@ function updateObject(title, link, listLinks, index) {
     }
   })
 
-  return JSON.stringify(listLinks)
+  return listLinks
 }
 
 // Create user local storage
@@ -361,28 +429,18 @@ function createObject(title, link, listLinks) {
   listLinks.push({
 		"name": `${title}`,
 		"link": `${link}`,
-		"tag": createObjectTags()
+		"tag": Array.from(document.querySelectorAll("#show>div"), (item) => item.textContent)
 	}) 
 
-  return JSON.stringify(listLinks)
-}
-
-// get tags
-function createObjectTags() {
-  const allTagsToSave = document.querySelectorAll('.tag')
-  tagToSave = []
-
-  allTagsToSave.forEach(itemToSave => {
-    if(itemToSave.children[0].checked) {
-      tagToSave.push(itemToSave.children[1].textContent)
-    }
-  }) 
+  return listLinks
 }
 
 // Show dialog
 function showHideDialog(state) {
   if(state == "show") {
     dialog.show()
+    overlayTag.hidden = false
+    contentTag.classList.add("content-tag")
   } else if (state == "hide") {
     dialog.close()
     if(!toggleAddTag.hasAttribute('hidden')) {
@@ -391,52 +449,62 @@ function showHideDialog(state) {
     if(!removeTagMsg.hasAttribute('hidden')) {
       removeTagMsg.toggleAttribute('hidden')
     }
+
+    overlayTag.hidden = true
+    contentTag.classList.remove("content-tag")
   }
 }
 
-function removeDataState() {
-  if(!removeTagMsg.hasAttribute("hidden")) {
-    saveTags.dataset.state = "remove"
-  } else {
-    attTagsState()
-    saveTags.removeAttribute("data-state")
-  }
-}
+// function removeDataState() {
+//   if(!removeTagMsg.hasAttribute("hidden")) {
+//     saveTags.dataset.state = "remove"
+//   } else {
+//     attTagsState()
+//     saveTags.removeAttribute("data-state")
+//   }
+// }
 
 // Check and uncheck tags
 function attTagsState(addTag=false) {
   const index = parseInt(document.querySelector("#done-btn").dataset['index'])
-  // const tagContentForAddLink = Array.from(document.querySelectorAll("#show>div"), (item) => item.textContent)
+  const tagContentForAddLink = Array.from(document.querySelectorAll("#show>div"), (item) => item.textContent)
 
   const titleCurrentLink = JSON.parse(localStorage.getItem("links"))
   const storageTags = JSON.parse(localStorage.tags)
 
   allTags = document.querySelectorAll(".tag")
 
-  if(!isNaN(index)) {// for edit cards
-    for(tagsItem in storageTags) {
-        if(titleCurrentLink[index].tag.includes(tagsItem)) {
-          allTags.forEach(checkTag => {
-            if(checkTag.children[1].textContent == tagsItem) {
-              checkTag.children[0].checked = true
-            }
-          })
-        } else {
-          allTags.forEach(uncheck => {
-            if(uncheck.children[1].textContent == tagsItem) {
-              uncheck.children[0].checked = false
-            }
-          })
-        }
-
-    }
-  } 
-  else { // for add cards
-    allTags.forEach(uncheck => {
-      if(uncheck.children[1].textContent) {
-        uncheck.children[0].checked = false
+  for(tagsItem in storageTags) {
+    if(!isNaN(index)) {// for edit cards
+      if(titleCurrentLink[index].tag.includes(tagsItem)) {
+        allTags.forEach(checkTag => {
+          if(checkTag.children[1].textContent == tagsItem) {
+            checkTag.children[0].checked = true
+          }
+        })
+      } else {
+        allTags.forEach(uncheck => {
+          if(uncheck.children[1].textContent == tagsItem) {
+            uncheck.children[0].checked = false
+          }
+        })
       }
-    })
+    } 
+    else { // for add cards
+      if(tagContentForAddLink.includes(tagsItem)) {
+        allTags.forEach(checkTag => {
+          if(checkTag.children[1].textContent == tagsItem) {
+            checkTag.children[0].checked = true
+          }
+        })
+      } else {
+        allTags.forEach(uncheck => {
+          if(uncheck.children[1].textContent  == tagsItem) {
+            uncheck.children[0].checked = false
+          }
+        })
+      }
+    }
   }
   
 }
@@ -482,13 +550,13 @@ function loadData(title, link) {
 // Add card html
 function newElement(title, link) {
   return contentLinks.innerHTML += `
-  <a class="slim-card" href="${link.value}" target="_blank">
+  <a class="slim-card" href="${link}" target="_blank">
       <div class="icon-content">
-          <img class="icon" src="${link.value.slice(0, link.value.indexOf('/', 8))}/favicon.ico" alt="link-image" onerror="errorHandle(this)">
+          <img class="icon" src="${link.slice(0, link.indexOf('/', 8))}/favicon.ico" alt="link-image" onerror="errorHandle(this)">
       </div>
       
       <div class="card-title">
-          <span title="${title.value}">${title.value}</span>
+          <span title="${title}">${title}</span>
       </div>
 
       <div class="card-edit-content">
@@ -546,6 +614,4 @@ function borderFilter() {
       linear-gradient(to right, ${colors.toString()}) border-box;
     `
   })
-
-  
 }
