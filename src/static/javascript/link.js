@@ -26,22 +26,23 @@ const removeTag = document.querySelector('#remove-tag')
 const removeTagMsg = document.querySelector('#remove-tag-msg')
 let allTags = document.querySelectorAll(".tag")
 
-// Local Storage
-class LocalStorage {
-  constructor(type, newObject) {
-    this.type = type
+// Save/Get item in the Local Storage
+class ManipulateLocalStorage {
+  constructor(nameOfKey, newObject) {
+    this.nameOfKey = nameOfKey
     this.newObject = newObject
   }
 
   saveNewObject() {
-    localStorage.setItem(this.type, JSON.stringify(this.newObject))
+    localStorage.setItem(this.nameOfKey, JSON.stringify(this.newObject))
   }
 
-  getNewObject() {
-    return JSON.parse(localStorage.getItem(this.type))
+  getObject() {
+    return JSON.parse(localStorage.getItem(this.nameOfKey))
   }
 }
 
+// Wheel from tags on situation tags get over the content
 showTagsContent.addEventListener('wheel', (event) => {
   event.preventDefault()
 
@@ -50,27 +51,33 @@ showTagsContent.addEventListener('wheel', (event) => {
   })
 })
 
-// Load Local Storages
+// Load Local Storage items
 window.addEventListener('load', () => {
-  const linksStorage = new LocalStorage(type = "links", newObject=[])
-  const resultLocalStorageLinks = linksStorage.getNewObject()
+  const linksStorage = new ManipulateLocalStorage(nameOfKey = "links", newObject=[])
+  const resultLocalStorageLinks = linksStorage.getObject()
+
   if(resultLocalStorageLinks) {
     for(item of resultLocalStorageLinks) {
       loadData(item.name, item.link)
       editCards()
     }
+
   } else if(resultLocalStorageLinks == null) {
     linksStorage.saveNewObject()
+
   }
 
-  const tagsStorage = new LocalStorage(type = "tags", newObject={})
-  const resultLocalStorageTags = tagsStorage.getNewObject()
+  const tagsStorage = new ManipulateLocalStorage(nameOfKey = "tags", newObject={})
+  const resultLocalStorageTags = tagsStorage.getObject()
+
   if(resultLocalStorageTags) {
     for(item in resultLocalStorageTags) {
       loadTag(false, item, resultLocalStorageTags[item])
+
     }
   } else if(resultLocalStorageTags == null) {
     tagsStorage.saveNewObject()
+
   }
 
   borderFilter()
@@ -80,7 +87,6 @@ window.addEventListener('load', () => {
 addNewLink.addEventListener('click', () => {
   categoryCard.removeChild(categoryCard.firstElementChild)
   categoryCard.appendChild(document.createElement('span')).innerText = 'Add Link'
-  // attTagsState()
   showOverlay()
   previewTag([])
 })
@@ -88,12 +94,10 @@ addNewLink.addEventListener('click', () => {
 
 // Edit the exist cars
 function editCards() {
-
   editLink = document.querySelectorAll('.card-edit')
   cards = document.querySelectorAll('.slim-card')
 
   editLink.forEach((item, index) => {
-
     item.addEventListener('mouseover', (event) => {
       event.currentTarget.parentElement.parentElement.setAttribute('onclick', 'event.preventDefault()')
     })
@@ -103,17 +107,16 @@ function editCards() {
     })
 
     item.addEventListener('click', () => {
-      tags = new LocalStorage("links")
-      previewTag(tags.getNewObject()[index].tag)
+      tagsOnCard = new ManipulateLocalStorage("links")
+      previewTag(tagsOnCard.getObject()[index].tag)
 
       categoryCard.removeChild(categoryCard.firstElementChild)
       categoryCard.appendChild(document.createElement('span')).innerText = 'Edit Link'
 
-      let linkCard = cards[index]
+      let cardInformation = cards[index] 
 
-      const title = linkCard.children[1].children[0].textContent
-      titleLink.value = title
-      link.value = linkCard.href
+      titleLink.value = cardInformation.children[1].children[0].textContent
+      link.value = cardInformation.href
 
       saveLink.dataset.index = index
       removeLink.dataset.index = index
@@ -124,10 +127,12 @@ function editCards() {
 
 }
 
+// ----
+
 // Save changes on cards
 saveLink.addEventListener('click', (event) => {
-  getItems = new LocalStorage("links")
-  allItems = getItems.getNewObject()
+  getItems = new ManipulateLocalStorage("links")
+  allItems = getItems.getObject()
 
   if(event.currentTarget.dataset['index']) {
     if(titleLink.value.trim()) {
@@ -169,7 +174,7 @@ saveLink.addEventListener('click', (event) => {
       link.classList.remove("placeholder-error")
       link.placeholder = "https://www.exemple.com"
 
-      const saveLocalStorage = new LocalStorage("links", updateObject(titleLink.value, temporaryLink, allItems, itemIndex))
+      const saveLocalStorage = new ManipulateLocalStorage("links", updateObject(titleLink.value, temporaryLink, allItems, itemIndex))
       saveLocalStorage.saveNewObject()
 
       editCards()
@@ -207,7 +212,7 @@ saveLink.addEventListener('click', (event) => {
       link.classList.remove("placeholder-error")
       link.placeholder = "https://www.exemple.com"
       
-      const saveLocalStorage = new LocalStorage("links", createObject(titleLink.value, temporaryLink, allItems))
+      const saveLocalStorage = new ManipulateLocalStorage("links", createObject(titleLink.value, temporaryLink, allItems))
       saveLocalStorage.saveNewObject()
 
       editCards()
