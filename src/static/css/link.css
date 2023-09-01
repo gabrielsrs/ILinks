@@ -103,7 +103,7 @@ main {
 
 #settings {
     position: relative;
-    transition: all 2s ease-in-out;
+    transition: all 1s ease-in-out;
 }
 
 .func-btn {
@@ -120,7 +120,7 @@ main {
     font-family: 'Source Code Pro', monospace;
     text-decoration: none;
     cursor: pointer;
-    transition: all 5s cubic-bezier(.23, 1, 0.32, 1);
+    transition: all 300ms cubic-bezier(.23, 1, 0.32, 1);
     user-select: none;
     -webkit-user-select: none;
     touch-action: manipulation;
