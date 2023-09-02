@@ -24,24 +24,37 @@ chooseFile.addEventListener('change', function() {
         reader.onload = function(event) {
             const fileContent = event.target.result
 
-            result = []
+            resultLinks = []
+            resultTags = {}
             
             const anchors = fileContent.split("\n").filter(n => n.includes("HREF")).map(x => x.slice(x.indexOf("<A")))
-            // const anchors1 = anchors.map(x => x.slice(x.indexOf("<A")))
+            const anchorsTags = fileContent.split("\n").filter(n => n.includes("DATA-TAG-COLOR")).map(x => x.slice(x.indexOf("<A")))
+
 
             anchors.forEach(item => {
-                result.push({
-                    "name": `${createKey(item)}`, "link": `${createValue(item)}`
+                resultLinks.push({
+                    'name': `${createKey(item)}`, 
+                    'link': `${createValue(item)}`,
+                    'tag': linkTag(item)
                 })
             })
+
+            anchorsTags.forEach(item => {
+                resultTags[createKey(item)] = createValue(item)
+            })
+            
             
             const currentsLinks = new ManipulateLocalStorage('links')
+            const currentsTags = new ManipulateLocalStorage('tags')
 
-            const allLinks = verifyDuplicateLinks(currentsLinks.getObject(), result)
+            const allLinks = verifyDuplicateLinks(currentsLinks.getObject(), resultLinks)
+            const allTags= verifyDuplicateTags(currentsTags.getObject(), resultTags)
 
             const objectLinkToSave = new ManipulateLocalStorage('links', allLinks)
+            const objectTagsToSave = new ManipulateLocalStorage('tags', allTags)
 
             objectLinkToSave.saveNewObject()
+            objectTagsToSave.saveNewObject()
 
         };
     } else {
@@ -51,7 +64,8 @@ chooseFile.addEventListener('change', function() {
 
 
 exportLinks.addEventListener('click', () => {
-    const links = document.querySelectorAll('.slim-card')
+    const currentsLinks = new ManipulateLocalStorage('links').getObject()
+    const currentsTags = new ManipulateLocalStorage('tags').getObject()
 
     let bookmarkFileContent = '<!DOCTYPE NETSCAPE-Bookmark-file-1>\n'
     bookmarkFileContent += `<!--This is an automatically generated file.
@@ -64,8 +78,16 @@ exportLinks.addEventListener('click', () => {
     bookmarkFileContent += '    <DT><H3 PERSONAL_TOOLBAR_FOLDER="true">Links</H3>\n'
     bookmarkFileContent += '    <DL><p>\n'
 
-    links.forEach(link => {
-        bookmarkFileContent += `        <DT><A HREF="${link.getAttribute("href")}">${link.querySelector("span").textContent}</A>\n`
+    currentsLinks.forEach(link => {
+        bookmarkFileContent += `        <DT><A HREF="${link.link}" DATA-TAG="${JSON.stringify(link.tag)}">${link.name}</A>\n`
+    })
+
+    bookmarkFileContent += '    </DL><p>\n'
+    bookmarkFileContent += '    <DT><H3 PERSONAL_TOOLBAR_FOLDER="true">Tags</H3>\n'
+    bookmarkFileContent += '    <DL><p>\n'
+
+    Object.keys(currentsTags).forEach(tag => {
+        bookmarkFileContent += `        <DT><A DATA-TAG-COLOR="${currentsTags[tag]}">${tag}</A>\n`
     })
 
     bookmarkFileContent += '    </DL><p>\n'
@@ -85,7 +107,19 @@ function createKey(item) {
 }
 
 function createValue(item) {
-    return item.slice(item.indexOf('"', item.indexOf('HREF')) + 1, item.indexOf('"', item.indexOf('HREF') + 7))
+    if(/HREF/.test(item)) {
+        return item.slice(item.indexOf('http'), item.indexOf('"', item.indexOf('http')))
+    } else {
+        return item.slice(item.indexOf('"')+1, item.indexOf('"', item.lastIndexOf('"')))
+    }
+}
+
+function linkTag(item) {
+    if(/DATA-TAG/.test(item)) {
+        return JSON.parse(item.slice(item.indexOf("["), item.lastIndexOf("]")+1).replaceAll("'", '"'))
+    } else {
+        return []
+    }
 }
 
 function verifyDuplicateLinks(currentLinks=[], importedLinks=[]) {
@@ -94,9 +128,14 @@ function verifyDuplicateLinks(currentLinks=[], importedLinks=[]) {
 
     for(linkPosition in importedLinks) {
         if(namesCurrentLinks.includes(importedLinks[linkPosition].name) && linksCurrentLinks.includes(importedLinks[linkPosition].link)) {
-            linkPosition.slice(importedLinks[linkPosition], importedLinks[linkPosition]+1)
+            linkPosition.splice(linkPosition, 1)
         }
     }
 
     return [...currentLinks, ...importedLinks]
+}
+
+function verifyDuplicateTags(currentTags={}, importedTags={}) {
+
+    return Object.assign({}, importedTags, currentTags)
 }
