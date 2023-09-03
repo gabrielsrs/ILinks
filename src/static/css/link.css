@@ -48,6 +48,7 @@ main {
     align-items: center;
     justify-content: flex-start;
     width: 94%;
+    max-height: 90vh;
     border: 1px solid #535c7e;
     border-radius: 20px;
 }
@@ -155,6 +156,34 @@ main {
     justify-content: space-evenly;
     justify-items: center;
     width: 94%;
+    padding: 10px;
+    overflow: auto;
+}
+
+#cards-grid::-webkit-scrollbar {
+    width: 15px;
+}
+
+#cards-grid::-webkit-scrollbar-button {
+    display: none;
+}
+
+#cards-grid::-webkit-scrollbar-thumb {
+    background-color: #959dbe;
+    border-radius: 30px;
+}
+
+#cards-grid::-webkit-scrollbar-thumb:active {
+    background-color: #8994bd;
+    cursor: grabbing;
+}
+
+#cards-grid::-webkit-scrollbar-track {
+    background-color: #bec2d3;
+    border-radius: 6px;
+    border-right: 4px solid #676d85;
+    border-left: 4px solid #676d85;
+
 }
 
 .slim-card {

@@ -128,7 +128,7 @@ function verifyDuplicateLinks(currentLinks=[], importedLinks=[]) {
 
     for(linkPosition in importedLinks) {
         if(namesCurrentLinks.includes(importedLinks[linkPosition].name) && linksCurrentLinks.includes(importedLinks[linkPosition].link)) {
-            linkPosition.splice(linkPosition, 1)
+            importedLinks[linkPosition].splice(linkPosition, 1)
         }
     }
 
