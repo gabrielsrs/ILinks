@@ -116,7 +116,7 @@ function createValue(item) {
 
 function linkTag(item) {
     if(/DATA-TAG/.test(item)) {
-        return JSON.parse(item.slice(item.indexOf("["), item.lastIndexOf("]")+1).replaceAll("'", '"'))
+        return JSON.parse(item.slice(item.indexOf("["), item.indexOf("]", item.indexOf("[")) + 1).replaceAll("'", '"'))
     } else {
         return []
     }
@@ -139,3 +139,5 @@ function verifyDuplicateTags(currentTags={}, importedTags={}) {
 
     return Object.assign({}, importedTags, currentTags)
 }
+
+// validate forms to slice, becase if an element have a give separete will genarette a trhoboshooter

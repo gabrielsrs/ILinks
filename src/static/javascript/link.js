@@ -85,8 +85,7 @@ window.addEventListener('load', () => {
 
 // Add new link
 addNewLink.addEventListener('click', () => {
-  categoryCard.removeChild(categoryCard.firstElementChild)
-  categoryCard.appendChild(document.createElement('span')).innerText = 'Add Link'
+  categoryCard.innerHTML = `<span>Add Link</span>`
   showOverlay()
   previewTag([])
 })
@@ -110,8 +109,7 @@ function editCards() {
       tagsOnCard = new ManipulateLocalStorage("links")
       previewTag(tagsOnCard.getObject()[index].tag)
 
-      categoryCard.removeChild(categoryCard.firstElementChild)
-      categoryCard.appendChild(document.createElement('span')).innerText = 'Edit Link'
+      categoryCard.innerHTML = `<span>Edit Link</span>`
 
       let cardInformation = cards[index] 
 

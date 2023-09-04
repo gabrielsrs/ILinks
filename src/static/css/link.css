@@ -156,7 +156,9 @@ main {
     justify-content: space-evenly;
     justify-items: center;
     width: 94%;
-    padding: 10px;
+    padding: 10px 15px;
+    border-right: 80px solid #fff0;
+    border-left: 80px solid #fff0;
     overflow: auto;
 }
 
