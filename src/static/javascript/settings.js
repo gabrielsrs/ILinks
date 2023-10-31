@@ -139,5 +139,3 @@ function verifyDuplicateTags(currentTags={}, importedTags={}) {
 
     return Object.assign({}, importedTags, currentTags)
 }
-
-// validate forms to slice, becase if an element have a give separete will genarette a trhoboshooter
