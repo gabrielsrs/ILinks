@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/root.css">
+    <link rel="stylesheet" href="css/link.css">
+    <title>ILink</title>
+</head>
+<body>
+    <main>
+        <%- include('partials/nav.ejs') %>
+        <section id="overlay">
+            <form method="post" action="/save/card" id="link-settings-box">
+                <div class="header-after">
+                    <div id="title-edit-card">
+                        <div id="category-card">
+                            <span></span>
+                        </div>
+                        <div id="out-card"></div>
+                    </div>
+                </div>
+                <div id="up-settings">
+                    <div id="title-settings">
+                        <label for="title-settings-field">Title</label>
+                        <input type="text" name="title" id="title-settings-field">
+                    </div>
+                    <section id="overlay-tag" hidden></section>
+                    <div id="tag-settings">
+                        <label for="tag-settings-field">Tag</label>
+                        <div id="tag-settings-field">
+                            <div class="select-tags" id="show"></div>
+                            <button id="add-tag" type="button"></button>
+                        </div>
+                        <dialog id="dialog">
+                            <div id="dialog-content">
+                                <div id="add-new-tag" hidden>
+                                    <div>
+                                        <input type="text" name="tagName" class="tag-name" id="new-tag-name" placeholder="Add tag Name"></input>
+                                        <input type="color" name="tagColor" class="color-tag" id="new-tag-color">
+                                    </div>
+                                </div>
+                                <div id="remove-tag-msg" hidden>
+                                    <span>Select Tag and Save</span>
+                                </div>
+                                <div id="tag-btn-content">
+                                    <button class="tag-btn" id="remove-tag">Remove</button>
+                                    <button class="tag-btn" id="hide" type="submit">Save</button>
+                                </div>
+                            </div>
+                        </dialog>
+                    </div>
+                </div>
+                <div id="down-settings">
+                    <div id="link-settings">
+                        <label for="link-settings-field">Link</label>
+                        <input type="text" name="link" id="link-settings-field" placeholder="https://www.exemple.com">
+                    </div>
+                </div>
+                <div id="confirm-changes">
+                    <button id="remove-btn" class="func-btn" type="button">Remove</button>
+                    <button id="done-btn" class="func-btn" type="submit">Done</button>
+                </div>
+            </form>
+        </section>
+        <section class="contents">
+            <div id="links-content">
+                <div class="header-after">
+                    <div id="menu-link">
+                        <div id="title-header-link">
+                            <span>Links</span>
+                        </div>
+                        <div id="header-left-content">
+                            <div id="settings" style="right: -350px;">
+                                <button id="add-link-btn" class="func-btn" type="button">New Link</button>
+                                <button id="import-link-btn" class="func-btn" type="button">
+                                    Import
+                                    <input type="file" name="" id="linksInput" style="display: none;">
+                                </button>
+                                <button id="export-link-btn" class="func-btn" type="button">Export</button>
+                            </div>
+                        </div>
+                        <svg id="settings-icon" xmlns="http://www.w3.org/2000/svg" height="1.5em" viewBox="0 0 128 512"><style>svg{fill:#959dbe}</style><path d="M64 360a56 56 0 1 0 0 112 56 56 0 1 0 0-112zm0-160a56 56 0 1 0 0 112 56 56 0 1 0 0-112zM120 96A56 56 0 1 0 8 96a56 56 0 1 0 112 0z"/></svg>
+                    </div>
+                </div>
+                <div id="cards-grid">
+                    <%- include('partials/cards.ejs') %>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script type="text/javascript" src="javascript/link.js"></script>
+    <!-- <script type="text/javascript" src="javascript/frontLink.js"></script> -->
+    <script type="text/javascript" src="javascript/settings.js"></script>
+</body>
+</html>

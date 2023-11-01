@@ -27,20 +27,20 @@ const removeTagMsg = document.querySelector('#remove-tag-msg')
 let allTags = document.querySelectorAll(".tag")
 
 // Save/Get item in the Local Storage
-// class ManipulateLocalStorage {
-//   constructor(nameOfKey, newObject) {
-//     this.nameOfKey = nameOfKey
-//     this.newObject = newObject
-//   }
+class ManipulateLocalStorage {
+  constructor(nameOfKey, newObject) {
+    this.nameOfKey = nameOfKey
+    this.newObject = newObject
+  }
 
-//   saveNewObject() {
-//     localStorage.setItem(this.nameOfKey, JSON.stringify(this.newObject))
-//   }
+  saveNewObject() {
+    localStorage.setItem(this.nameOfKey, JSON.stringify(this.newObject))
+  }
 
-//   getObject() {
-//     return JSON.parse(localStorage.getItem(this.nameOfKey))
-//   }
-// }
+  getObject() {
+    return JSON.parse(localStorage.getItem(this.nameOfKey))
+  }
+}
 
 // Wheel from tags on situation tags get over the content
 showTagsContent.addEventListener('wheel', (event) => {
@@ -52,39 +52,35 @@ showTagsContent.addEventListener('wheel', (event) => {
 })
 
 // Load Local Storage items
-// window.addEventListener('load', () => {
-//   const linksStorage = new ManipulateLocalStorage(nameOfKey = "links", newObject=[])
-//   const resultLocalStorageLinks = linksStorage.getObject()
-
-//   if(resultLocalStorageLinks) {
-//     for(item of resultLocalStorageLinks) {
-//       loadData(item.name, item.link)
-//       editCards()
-//     }
-
-//   } else if(resultLocalStorageLinks == null) {
-//     linksStorage.saveNewObject()
-
-//   }
-
-//   const tagsStorage = new ManipulateLocalStorage(nameOfKey = "tags", newObject={})
-//   const resultLocalStorageTags = tagsStorage.getObject()
-
-//   if(resultLocalStorageTags) {
-//     for(item in resultLocalStorageTags) {
-//       loadTag(false, item, resultLocalStorageTags[item])
-
-//     }
-//   } else if(resultLocalStorageTags == null) {
-//     tagsStorage.saveNewObject()
-
-//   }
-
-//   borderFilter()
-// })
-
 window.addEventListener('load', () => {
-  editCards()
+  const linksStorage = new ManipulateLocalStorage(nameOfKey = "links", newObject=[])
+  const resultLocalStorageLinks = linksStorage.getObject()
+
+  if(resultLocalStorageLinks) {
+    for(item of resultLocalStorageLinks) {
+      loadData(item.name, item.link)
+      editCards()
+    }
+
+  } else if(resultLocalStorageLinks == null) {
+    linksStorage.saveNewObject()
+
+  }
+
+  const tagsStorage = new ManipulateLocalStorage(nameOfKey = "tags", newObject={})
+  const resultLocalStorageTags = tagsStorage.getObject()
+
+  if(resultLocalStorageTags) {
+    for(item in resultLocalStorageTags) {
+      loadTag(false, item, resultLocalStorageTags[item])
+
+    }
+  } else if(resultLocalStorageTags == null) {
+    tagsStorage.saveNewObject()
+
+  }
+
+  borderFilter()
 })
 
 // Add new link
@@ -110,8 +106,8 @@ function editCards() {
     })
 
     item.addEventListener('click', () => {
-      // tagsOnCard = new ManipulateLocalStorage("links")
-      // previewTag(tagsOnCard.getObject()[index].tag)
+      tagsOnCard = new ManipulateLocalStorage("links")
+      previewTag(tagsOnCard.getObject()[index].tag)
 
       categoryCard.innerHTML = `<span>Edit Link</span>`
 
@@ -132,105 +128,101 @@ function editCards() {
 // ----
 
 // Save changes on cards
-// saveLink.addEventListener('click', (event) => {
-//   getItems = new ManipulateLocalStorage("links")
-//   allItems = getItems.getObject()
-
-//   if(event.currentTarget.dataset['index']) {
-//     if(titleLink.value.trim()) {
-//       if(!link.value.trim()) {
-//         link.value = ""
-//         link.classList.add("placeholder-error")
-//         return link.placeholder = "Link Not Found"
-//       }
-
-//       let iconEdit
-//       let temporaryLink
-
-//       const itemIndex = parseInt(event.currentTarget.dataset['index'])
-//       removeDataIndex()
-
-//       if(!(link.value.slice(0, 4) == "http")) {
-//         temporaryLink = `https://${link.value}`
-//       } else {
-//         temporaryLink = link.value
-//       }
-
-//       cards[itemIndex].href = temporaryLink
-      
-//       if(cards[itemIndex].children[0].children[0]){cards[itemIndex].children[0].children[0].remove()}
-//       iconEdit = cards[itemIndex].children[0].appendChild(document.createElement('img'))
-//       iconEdit.classList.add('icon')
-//       iconEdit.src = `${temporaryLink.slice(0, temporaryLink.indexOf('/', 8))}/favicon.ico`
-//       iconEdit.alt = "link-image"
-      
-//       cards[itemIndex].children[1].children[0].innerHTML = titleLink.value
-//       cards[itemIndex].children[1].children[0].title = titleLink.value
-
-//       cards[itemIndex].children[0].children[0].addEventListener("error", (event) => {
-//         event.currentTarget.style.display = 'none'
-//       });
-      
-//       titleLink.classList.remove("placeholder-error")
-//       titleLink.removeAttribute("placeholder")
-//       link.classList.remove("placeholder-error")
-//       link.placeholder = "https://www.exemple.com"
-
-//       const saveLocalStorage = new ManipulateLocalStorage("links", updateObject(titleLink.value, temporaryLink, allItems, itemIndex))
-//       saveLocalStorage.saveNewObject()
-
-//       editCards()
-
-//     } else {
-//       titleLink.value = ""
-//       titleLink.classList.add("placeholder-error")
-//       return titleLink.placeholder = "Text Not Found"
-//     }
-//   } else {
-//     if(titleLink.value.trim()) {
-//       if(!link.value.trim()) {
-//         link.value = ""
-//         link.classList.add("placeholder-error")
-//         return link.placeholder = "Link Not Found"
-//       }
-
-//       let temporaryLink
-//       if(!(link.value.slice(0, 4) == "http")) {
-//         temporaryLink = `https://${link.value}`
-//       } else {
-//         temporaryLink = link.value
-//       }
-
-//       newElement(titleLink.value, temporaryLink)
-
-//       cards = document.querySelectorAll('.slim-card')
-
-//       cards[cards.length - 1].children[0].children[0].addEventListener("error", (event) => {
-//         event.currentTarget.style.display = 'none'
-//       });
-
-//       titleLink.classList.remove("placeholder-error")
-//       titleLink.removeAttribute("placeholder")
-//       link.classList.remove("placeholder-error")
-//       link.placeholder = "https://www.exemple.com"
-      
-//       const saveLocalStorage = new ManipulateLocalStorage("links", createObject(titleLink.value, temporaryLink, allItems))
-//       saveLocalStorage.saveNewObject()
-
-//       editCards()
-//       borderFilter()
-//     } else {
-//       titleLink.value = ""
-//       titleLink.classList.add("placeholder-error")
-//       return titleLink.placeholder = "Text Not Found"
-//     }
-//   }
-
-//   hideOverlay()
-// })
-
 saveLink.addEventListener('click', (event) => {
-  linkSettingsBox.action = "/save/card"
+  getItems = new ManipulateLocalStorage("links")
+  allItems = getItems.getObject()
+
+  if(event.currentTarget.dataset['index']) {
+    if(titleLink.value.trim()) {
+      if(!link.value.trim()) {
+        link.value = ""
+        link.classList.add("placeholder-error")
+        return link.placeholder = "Link Not Found"
+      }
+
+      let iconEdit
+      let temporaryLink
+
+      const itemIndex = parseInt(event.currentTarget.dataset['index'])
+      removeDataIndex()
+
+      if(!(link.value.slice(0, 4) == "http")) {
+        temporaryLink = `https://${link.value}`
+      } else {
+        temporaryLink = link.value
+      }
+
+      cards[itemIndex].href = temporaryLink
+      
+      if(cards[itemIndex].children[0].children[0]){cards[itemIndex].children[0].children[0].remove()}
+      iconEdit = cards[itemIndex].children[0].appendChild(document.createElement('img'))
+      iconEdit.classList.add('icon')
+      iconEdit.src = `${temporaryLink.slice(0, temporaryLink.indexOf('/', 8))}/favicon.ico`
+      iconEdit.alt = "link-image"
+      
+      cards[itemIndex].children[1].children[0].innerHTML = titleLink.value
+      cards[itemIndex].children[1].children[0].title = titleLink.value
+
+      cards[itemIndex].children[0].children[0].addEventListener("error", (event) => {
+        event.currentTarget.style.display = 'none'
+      });
+      
+      titleLink.classList.remove("placeholder-error")
+      titleLink.removeAttribute("placeholder")
+      link.classList.remove("placeholder-error")
+      link.placeholder = "https://www.exemple.com"
+
+      const saveLocalStorage = new ManipulateLocalStorage("links", updateObject(titleLink.value, temporaryLink, allItems, itemIndex))
+      saveLocalStorage.saveNewObject()
+
+      editCards()
+
+    } else {
+      titleLink.value = ""
+      titleLink.classList.add("placeholder-error")
+      return titleLink.placeholder = "Text Not Found"
+    }
+  } else {
+    if(titleLink.value.trim()) {
+      if(!link.value.trim()) {
+        link.value = ""
+        link.classList.add("placeholder-error")
+        return link.placeholder = "Link Not Found"
+      }
+
+      let temporaryLink
+      if(!(link.value.slice(0, 4) == "http")) {
+        temporaryLink = `https://${link.value}`
+      } else {
+        temporaryLink = link.value
+      }
+
+      newElement(titleLink.value, temporaryLink)
+
+      cards = document.querySelectorAll('.slim-card')
+
+      cards[cards.length - 1].children[0].children[0].addEventListener("error", (event) => {
+        event.currentTarget.style.display = 'none'
+      });
+
+      titleLink.classList.remove("placeholder-error")
+      titleLink.removeAttribute("placeholder")
+      link.classList.remove("placeholder-error")
+      link.placeholder = "https://www.exemple.com"
+      
+      const saveLocalStorage = new ManipulateLocalStorage("links", createObject(titleLink.value, temporaryLink, allItems))
+      saveLocalStorage.saveNewObject()
+
+      editCards()
+      borderFilter()
+    } else {
+      titleLink.value = ""
+      titleLink.classList.add("placeholder-error")
+      return titleLink.placeholder = "Text Not Found"
+    }
+  }
+
+  cleanOverlay()
   hideOverlay()
 })
 
@@ -243,7 +235,7 @@ addTag.addEventListener("click", () => {
       removeTagMsg.toggleAttribute('hidden')
     }
     
-    // attTagsState()
+    attTagsState()
     showHideDialog("show")
     toggleAddTag.toggleAttribute('hidden')
   }
@@ -256,92 +248,88 @@ showTagsContent.addEventListener("click", () => {
   if(dialog.open) {
     showHideDialog("hide")
   } else {
-    // attTagsState()
+    attTagsState()
     showHideDialog("show")
   }
   
+  // removeDataState() *****
 })
 
 // Click save tags
-// saveTags.addEventListener("click", () => {
-//   const newTagName = document.querySelector('#new-tag-name')
-//   const newTagColor = document.querySelector('#new-tag-color')
-
-//   const linkToSaveTag = JSON.parse(localStorage.links)
-//   const storageTags = JSON.parse(localStorage.tags)
-
-//   if(!toggleAddTag.hasAttribute("hidden")) { // add tag (input add tag active)
-//     if(newTagName.value) {
-//       toggleAddTag.toggleAttribute('hidden')
-//       addNweTag(newTagName.value, newTagColor.value)
-      
-//       storageTags[newTagName.value] = newTagColor.value
-
-//       newTagName.value = ""
-//       newTagColor.value = ""
-
-//       allTags = document.querySelectorAll(".tag")
-//     } else {
-//       newTagName.placeholder = "Name not add"
-//     }
-//   } else if(!removeTagMsg.hasAttribute("hidden")) { // remove tag (msg remove active) saveTags.dataset.state == "remove"
-//     allTags.forEach(item => {
-//       if(item.children[0].checked) {
-//         delete storageTags[item.children[1].textContent]
-//         linkToSaveTag.forEach(tagToRemove => {
-//           if(tagToRemove.tag.includes(item.children[1].textContent)) {
-//             tagToRemove.tag.splice(tagToRemove.tag.indexOf(item.children[1].textContent), 1)
-//           }
-//         })
-  
-//         item.remove()
-//       }
-//     })
-
-//     // previewTag validating if ha ve index or not, same as else below
-//     attTagsState()
-//     removeTagMsg.toggleAttribute('hidden')
-//     // removeDataState()
-//   } else { // check tag from a link (save without remove and add tag)
-//     const doneIndex = document.querySelector("#done-btn")
-//     if(doneIndex.dataset['index']) { // Existent cards
-//       const allTagsToSave = document.querySelectorAll('.tag')
-//       linkToSaveTag[parseInt(doneIndex.dataset['index'])].tag = []
-
-//       allTagsToSave.forEach(itemToSave => {
-//         if(itemToSave.children[0].checked) {
-//           linkToSaveTag[parseInt(doneIndex.dataset['index'])].tag.push(itemToSave.children[1].textContent)
-//         }
-//       })
-
-//       previewTag(linkToSaveTag[parseInt(document.querySelector("#done-btn").dataset["index"])].tag)
-//     } else { // when add card
-//       const allTagsToSave = document.querySelectorAll('.tag')
-//       display_tags = []
-
-//       allTagsToSave.forEach(itemToSave => {
-//         if(itemToSave.children[0].checked) {
-//           display_tags.push(itemToSave.children[1].textContent)
-//         }
-//       })
-
-//       previewTag(display_tags)
-//     }
-//     showHideDialog("hide")
-//   }
-
-//   document.querySelectorAll('.tag').forEach(currentColor => {
-//     storageTags[currentColor.children[1].textContent] = currentColor.children[2].value
-//   })
-//   localStorage.setItem("tags", JSON.stringify(storageTags))
-//   localStorage.setItem("links", JSON.stringify(linkToSaveTag))
-
-//   borderFilter()
-// })
-
 saveTags.addEventListener("click", () => {
-  linkSettingsBox.action = "/save/tag"
-  showHideDialog("hide")
+  const newTagName = document.querySelector('#new-tag-name')
+  const newTagColor = document.querySelector('#new-tag-color')
+
+  const linkToSaveTag = JSON.parse(localStorage.links)
+  const storageTags = JSON.parse(localStorage.tags)
+
+  if(!toggleAddTag.hasAttribute("hidden")) { // add tag (input add tag active)
+    if(newTagName.value) {
+      toggleAddTag.toggleAttribute('hidden')
+      addNweTag(newTagName.value, newTagColor.value)
+      
+      storageTags[newTagName.value] = newTagColor.value
+
+      newTagName.value = ""
+      newTagColor.value = ""
+
+      allTags = document.querySelectorAll(".tag")
+    } else {
+      newTagName.placeholder = "Name not add"
+    }
+  } else if(!removeTagMsg.hasAttribute("hidden")) { // remove tag (msg remove active) saveTags.dataset.state == "remove"
+    allTags.forEach(item => {
+      if(item.children[0].checked) {
+        delete storageTags[item.children[1].textContent]
+        linkToSaveTag.forEach(tagToRemove => {
+          if(tagToRemove.tag.includes(item.children[1].textContent)) {
+            tagToRemove.tag.splice(tagToRemove.tag.indexOf(item.children[1].textContent), 1)
+          }
+        })
+  
+        item.remove()
+      }
+    })
+
+    // previewTag validating if ha ve index or not, same as else below
+    attTagsState()
+    removeTagMsg.toggleAttribute('hidden')
+    // removeDataState()
+  } else { // check tag from a link (save without remove and add tag)
+    const doneIndex = document.querySelector("#done-btn")
+    if(doneIndex.dataset['index']) { // Existent cards
+      const allTagsToSave = document.querySelectorAll('.tag')
+      linkToSaveTag[parseInt(doneIndex.dataset['index'])].tag = []
+
+      allTagsToSave.forEach(itemToSave => {
+        if(itemToSave.children[0].checked) {
+          linkToSaveTag[parseInt(doneIndex.dataset['index'])].tag.push(itemToSave.children[1].textContent)
+        }
+      })
+
+      previewTag(linkToSaveTag[parseInt(document.querySelector("#done-btn").dataset["index"])].tag)
+    } else { // when add card
+      const allTagsToSave = document.querySelectorAll('.tag')
+      display_tags = []
+
+      allTagsToSave.forEach(itemToSave => {
+        if(itemToSave.children[0].checked) {
+          display_tags.push(itemToSave.children[1].textContent)
+        }
+      })
+
+      previewTag(display_tags)
+    }
+    showHideDialog("hide")
+  }
+
+  document.querySelectorAll('.tag').forEach(currentColor => {
+    storageTags[currentColor.children[1].textContent] = currentColor.children[2].value
+  })
+  localStorage.setItem("tags", JSON.stringify(storageTags))
+  localStorage.setItem("links", JSON.stringify(linkToSaveTag))
+
+  borderFilter()
 })
 
 // Remove tag
@@ -351,7 +339,7 @@ removeTag.addEventListener("click", () => {
   }
 
   if(!removeTagMsg.hasAttribute('data-state')) {
-    // attTagsState()
+    attTagsState()
   }
 
   removeTagMsg.toggleAttribute('hidden')
@@ -368,6 +356,7 @@ removeTag.addEventListener("click", () => {
 outCard.addEventListener('click', () => {
   removeDataIndex()
   hideOverlay()
+  cleanOverlay()
 
   titleLink.classList.remove("placeholder-error")
   titleLink.removeAttribute("placeholder")
@@ -393,6 +382,7 @@ removeLink.addEventListener('click', (event) => {
   link.placeholder = "https://www.exemple.com"
 
   hideOverlay()
+  cleanOverlay()
 })
 
 // Clean Overlay content
@@ -404,7 +394,6 @@ function cleanOverlay() {
 
 // Show Overlay content
 function showOverlay() {
-  cleanOverlay()
   overlay.style.display = 'flex'
   linkSettingsBox.style.display = 'flex'
 }
@@ -479,49 +468,49 @@ function showHideDialog(state) {
 // }
 
 // Check and uncheck tags
-// function attTagsState(addTag=false) {
-//   const index = parseInt(document.querySelector("#done-btn").dataset['index'])
-//   const tagContentForAddLink = Array.from(document.querySelectorAll("#show>div"), (item) => item.textContent)
+function attTagsState(addTag=false) {
+  const index = parseInt(document.querySelector("#done-btn").dataset['index'])
+  const tagContentForAddLink = Array.from(document.querySelectorAll("#show>div"), (item) => item.textContent)
 
-//   const titleCurrentLink = JSON.parse(localStorage.getItem("links"))
-//   const storageTags = JSON.parse(localStorage.tags)
+  const titleCurrentLink = JSON.parse(localStorage.getItem("links"))
+  const storageTags = JSON.parse(localStorage.tags)
 
-//   allTags = document.querySelectorAll(".tag")
+  allTags = document.querySelectorAll(".tag")
 
-//   for(tagsItem in storageTags) {
-//     if(!isNaN(index)) {// for edit cards
-//       if(titleCurrentLink[index].tag.includes(tagsItem)) {
-//         allTags.forEach(checkTag => {
-//           if(checkTag.children[1].textContent == tagsItem) {
-//             checkTag.children[0].checked = true
-//           }
-//         })
-//       } else {
-//         allTags.forEach(uncheck => {
-//           if(uncheck.children[1].textContent == tagsItem) {
-//             uncheck.children[0].checked = false
-//           }
-//         })
-//       }
-//     } 
-//     else { // for add cards
-//       if(tagContentForAddLink.includes(tagsItem)) {
-//         allTags.forEach(checkTag => {
-//           if(checkTag.children[1].textContent == tagsItem) {
-//             checkTag.children[0].checked = true
-//           }
-//         })
-//       } else {
-//         allTags.forEach(uncheck => {
-//           if(uncheck.children[1].textContent  == tagsItem) {
-//             uncheck.children[0].checked = false
-//           }
-//         })
-//       }
-//     }
-//   }
+  for(tagsItem in storageTags) {
+    if(!isNaN(index)) {// for edit cards
+      if(titleCurrentLink[index].tag.includes(tagsItem)) {
+        allTags.forEach(checkTag => {
+          if(checkTag.children[1].textContent == tagsItem) {
+            checkTag.children[0].checked = true
+          }
+        })
+      } else {
+        allTags.forEach(uncheck => {
+          if(uncheck.children[1].textContent == tagsItem) {
+            uncheck.children[0].checked = false
+          }
+        })
+      }
+    } 
+    else { // for add cards
+      if(tagContentForAddLink.includes(tagsItem)) {
+        allTags.forEach(checkTag => {
+          if(checkTag.children[1].textContent == tagsItem) {
+            checkTag.children[0].checked = true
+          }
+        })
+      } else {
+        allTags.forEach(uncheck => {
+          if(uncheck.children[1].textContent  == tagsItem) {
+            uncheck.children[0].checked = false
+          }
+        })
+      }
+    }
+  }
   
-// }
+}
 
 function previewTag(list_tags) {
   showTagsContent.replaceChildren()
