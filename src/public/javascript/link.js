@@ -129,6 +129,11 @@ function editCards() {
 
 }
 
+linkSettingsBox.addEventListener('submit', () => {
+
+})
+
+
 // ----
 
 // Save changes on cards
@@ -229,8 +234,11 @@ function editCards() {
 //   hideOverlay()
 // })
 
+
+
+
 saveLink.addEventListener('click', (event) => {
-  linkSettingsBox.action = "/save/card"
+  linkSettingsBox.action = "/save/link"
   hideOverlay()
 })
 
@@ -262,7 +270,10 @@ showTagsContent.addEventListener("click", () => {
   
 })
 
-// Click save tags
+
+
+
+// // Click save tags
 // saveTags.addEventListener("click", () => {
 //   const newTagName = document.querySelector('#new-tag-name')
 //   const newTagColor = document.querySelector('#new-tag-color')
@@ -338,6 +349,9 @@ showTagsContent.addEventListener("click", () => {
 
 //   borderFilter()
 // })
+
+
+
 
 saveTags.addEventListener("click", () => {
   linkSettingsBox.action = "/save/tag"
