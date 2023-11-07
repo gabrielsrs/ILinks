@@ -1,4 +1,5 @@
 import express from "express"
+import mongoose from "mongoose";
 import path from "path"
 import { fileURLToPath } from 'url';
 import bodyParser from "body-parser";
@@ -13,6 +14,10 @@ const __dirname = fileURLToPath(import.meta.url)
 app.set("views", path.join(__dirname, "../views"))
 
 app.use(express.static("src/public"))
+
+app.set("view engine", "ejs")
+
+mongoose.connect('mongodb://127.0.0.1:27017/ILink')
 
 app.use(router)
 
