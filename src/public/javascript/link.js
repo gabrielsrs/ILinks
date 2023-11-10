@@ -26,6 +26,8 @@ const removeTag = document.querySelector('#remove-tag')
 const removeTagMsg = document.querySelector('#remove-tag-msg')
 let allTags = document.querySelectorAll(".tag")
 
+// import { Delete, Update } from "./request"
+
 // Save/Get item in the Local Storage
 // class ManipulateLocalStorage {
 //   constructor(nameOfKey, newObject) {
@@ -235,12 +237,36 @@ linkSettingsBox.addEventListener('submit', () => {
 // })
 
 
-
-
-saveLink.addEventListener('click', (event) => {
-  linkSettingsBox.action = "/save/link"
+linkSettingsBox.addEventListener('submit', (event) => {
+  if(event.submitter.dataset["index"]) {
+    event.preventDefault()
+    const updateLink = new UpdateLink()
+    updateLink.execute({
+      id: event.submitter.dataset["index"],
+      title: titleLink.value,
+      link: link.value
+    })
+  } else {
+    linkSettingsBox.action = "/save/link"
+  }
   hideOverlay()
 })
+
+
+// saveLink.addEventListener('click', (event) => {
+//   if(event.currentTarget.dataset['index']) {
+//     event.preventDefault()
+//     const updateLink = new UpdateLink()
+//     updateLink.execute({
+//       id: event.currentTarget.dataset['index'],
+//       title: titleLink.value,
+//       link: link.value
+//     })
+//   } else {
+//     linkSettingsBox.action = "/save/link"
+//   }
+//   hideOverlay()
+// })
 
 // Add new tag
 addTag.addEventListener("click", () => {
@@ -393,10 +419,14 @@ outCard.addEventListener('click', () => {
 removeLink.addEventListener('click', (event) => {
   if(event.currentTarget.dataset['index']) {
     cards[event.currentTarget.dataset['index']].remove()
+    const callDelete = new DeleteLink()
+    callDelete.execute({
+      id: event.currentTarget.dataset['index']
+    })
 
-    const allItems = JSON.parse(localStorage.getItem("links"))
-    allItems.splice(parseInt(event.currentTarget.dataset['index']), 1)
-    localStorage.setItem("links", JSON.stringify(allItems))
+    // const allItems = JSON.parse(localStorage.getItem("links"))
+    // allItems.splice(parseInt(event.currentTarget.dataset['index']), 1)
+    // localStorage.setItem("links", JSON.stringify(allItems))
     removeDataIndex()
     editCards()
   }

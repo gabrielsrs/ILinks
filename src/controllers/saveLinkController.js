@@ -7,7 +7,7 @@ class SaveLinkController {
         
         const saveLinkService = new SaveLinkService()
 
-        const savedLink = await saveLinkService.execute({
+        await saveLinkService.execute({
             title,
             link
         })

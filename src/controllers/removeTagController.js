@@ -1,9 +1,9 @@
 import { request, response } from "express";
 
-class RemoveController {
+class RemoveTagController {
     async handle(request, response) {
-
+        
     }
 }
 
-export { RemoveController }
+export { RemoveTagController }
