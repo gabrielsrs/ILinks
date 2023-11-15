@@ -1,22 +1,25 @@
-import { request, response } from "express";
 import { RemoveLinkService } from "../services/removeLinkService.js"
 import { ListLinksService } from "../services/listLinksService.js"
+import { TryCatch } from "../utils/tryCatch.js"
 
 class RemoveLinkController {
-    async handle(request, response) {
-        const { id } = request.params
+    async handle(req, res, next) {
+        const tryCatch = new TryCatch()
+        tryCatch.handle(req, res, next, async () => {
+            const { id } = req.params
 
-        const removeLinkService = new  RemoveLinkService()
-        const listLinksService = new ListLinksService()
+            const removeLinkService = new  RemoveLinkService()
+            const listLinksService = new ListLinksService()
 
-        const allItems = await listLinksService.execute()
+            const allItems = await listLinksService.execute()
 
-        const deletedItem = await removeLinkService.execute({
-            id,
-            items: allItems
-        })
+            const deletedItem = await removeLinkService.execute({
+                id,
+                items: allItems
+            })
 
-        return response.json(deletedItem)
+            return res.json(deletedItem)
+        })    
     }
 }
 

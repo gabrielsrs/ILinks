@@ -1,41 +1,35 @@
 import Link from "../models/linkModel.js"
-import axios from "axios"
+import { TitleValidator, LinkValidator } from "../utils/validateReqData.js"
+import { ValidateUrl } from "../utils/validateUrl.js"
+import { FaviconLink } from "../utils/faviconLink.js"
 
 class UpdateLinkService {
     async execute({ id: id, title: title, link: link, items: items }) {
         const itemToBeUpdate = items[id]._id
 
-        if(title && !title.trim()) {
-            throw new Error({err: "Title wasn't filled!"})
-        }
+        const titleValidator = new TitleValidator()
+        titleValidator.validate(title)
 
         const { validateLink, validateLinkImg, urlFavicon } = await (async () => {
-            if(link) {
-                if(!link.trim()) {
-                    throw new Error({ err: "Link wasn't filled!" })
-                }
-                await axios.get(link, {
-                    timeout: 10000
-                })
-                .then(response => {
-                    return response.status
-                })
-                .catch(err => {
-                    throw new Error({ err: err.message })
-                })
+            const linkValidator = new LinkValidator()
+            linkValidator.validate(link)
 
-                const url = new URL(link)
-                const urlFavicon = `${url.origin}/favicon.ico`
-                const validateLinkImg = await axios.get(urlFavicon, {
-                    timeout: 10000
-                })
-                .then(response => response.status )
-                .catch(err => console.error(err.message))
+            const validateUrl = new ValidateUrl()
 
-                return { validateLink: true, validateLinkImg, urlFavicon }
-            } 
+            await validateUrl.validate({
+                link, 
+                options: { timeout: 10000 }
+            })
 
-            return { validateLink: false, validateLinkImg: 404, urlFavicon: false }
+            const faviconLink = new FaviconLink()
+            const urlFavicon = faviconLink.favicon(link)
+
+            const validateLinkImg = await validateUrl.validate({
+                link: urlFavicon, 
+                options: { timeout: 10000 }
+            })
+
+            return { validateLink: true, validateLinkImg, urlFavicon }
         })()
 
         const updateItem = await Link.findOneAndUpdate({

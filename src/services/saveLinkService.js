@@ -1,33 +1,31 @@
 import Link from "../models/linkModel.js"
-import axios from "axios"
+import { TitleValidator, LinkValidator } from "../utils/validateReqData.js"
+import { ValidateUrl } from "../utils/validateUrl.js"
+import { FaviconLink } from "../utils/faviconLink.js"
 
 class SaveLinkService {
     async execute ({ title, link }) {
-        if(!title.trim()) {
-            throw new Error({err: "Title wasn't filled!"})
-        }
+        const titleValidator = new TitleValidator()
+        const linkValidator = new LinkValidator()
 
-        if(!link.trim()) {
-            throw new Error({ err: "Link wasn't filled!" })
-        }
+        titleValidator.validate({ title })
+        linkValidator.validate({ link })
         
-        await axios.get(link, {
-            timeout: 10000
-        })
-        .then(response => response.status)
-        .catch(err => {
-            throw new Error({ err: err.message })
+        const validateUrl = new ValidateUrl()
+
+        await validateUrl.validate({
+            link, 
+            options: { timeout: 10000 }
         })
 
+        const faviconLink = new FaviconLink()
+        const urlFavicon = faviconLink.favicon({ link })
 
-        const url = new URL(link)
-        const urlFavicon = `${url.origin}/favicon.ico`
-        const validateLinkImg = await axios.get(urlFavicon, {
-            timeout: 10000
+        const validateLinkImg = await validateUrl.validate({
+            link: urlFavicon, 
+            options: { timeout: 10000 }
         })
-        .then(response => response.status )
-        .catch(err => console.error(err.message))
-
+        
         const linkToSave = new Link({
             title,
             link,
@@ -38,7 +36,7 @@ class SaveLinkService {
         const save = await linkToSave.save()
 
         console.log(save)
-        return save
+        return save        
     }
 }
 
