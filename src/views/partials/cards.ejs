@@ -1,5 +1,5 @@
-<% if(locals.data) { %>
-    <% for(let item of data) { %>
+<% if(locals.links) { %>
+    <% for(let item of links) { %>
         <a class="slim-card" href="<%= item.link %>" target="_blank" style="background: linear-gradient(to right, rgb(190, 194, 211), rgb(190, 194, 211)) padding-box padding-box, linear-gradient(to right, rgb(99, 22, 121) 0%, rgb(99, 22, 121) 100%) border-box border-box;">
             <div class="icon-content">
                 <img class="icon" src="<%= item.favicon %>" alt="link-image" onerror="errorHandle(this)">

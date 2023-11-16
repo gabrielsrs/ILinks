@@ -14,7 +14,7 @@ class UpdateLinkController {
 
             const items = await listLinksService.execute()
 
-            const itemsUpdated = updateLinkService.execute({
+            const itemsUpdated = await updateLinkService.execute({
                 id,
                 title,
                 link,

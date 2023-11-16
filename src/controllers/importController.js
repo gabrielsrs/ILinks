@@ -1,7 +1,7 @@
-class FilterController {
+class ImportController {
     async handle(req, res, next) {
         
     }
 }
 
-export { FilterController }
+export { ImportController }

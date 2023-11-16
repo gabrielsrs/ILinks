@@ -9,12 +9,13 @@ class SaveLinkController {
         
             const saveLinkService = new SaveLinkService()
 
-            await saveLinkService.execute({
+            const savedLink = await saveLinkService.execute({
                 title,
                 link
             })
             
-            res.redirect("/")
+            return res.json(savedLink)
+            return res.redirect("/")
         })
     }
 }

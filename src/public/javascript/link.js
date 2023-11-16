@@ -236,21 +236,21 @@ linkSettingsBox.addEventListener('submit', () => {
 //   hideOverlay()
 // })
 
-
-linkSettingsBox.addEventListener('submit', (event) => {
-  if(event.submitter.dataset["index"]) {
-    event.preventDefault()
-    const updateLink = new UpdateLink()
-    updateLink.execute({
-      id: event.submitter.dataset["index"],
-      title: titleLink.value,
-      link: link.value
-    })
-  } else {
-    linkSettingsBox.action = "/save/link"
-  }
-  hideOverlay()
-})
+// --------------------------------------------------------------------------------------------
+// linkSettingsBox.addEventListener('submit', (event) => {
+//   if(event.submitter.dataset["index"]) {
+//     event.preventDefault()
+//     const updateLink = new UpdateLink()
+//     updateLink.execute({
+//       id: event.submitter.dataset["index"],
+//       title: titleLink.value,
+//       link: link.value
+//     })
+//   } else {
+//     linkSettingsBox.action = "/save/link"
+//   }
+//   hideOverlay()
+// })
 
 
 // saveLink.addEventListener('click', (event) => {

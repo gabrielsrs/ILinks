@@ -1,14 +1,14 @@
 import Link from "../models/linkModel.js"
-import { TitleValidator, LinkValidator } from "../utils/validateReqData.js"
+import { StringValidator, LinkValidator } from "../utils/validateReqData.js"
 import { ValidateUrl } from "../utils/validateUrl.js"
 import { FaviconLink } from "../utils/faviconLink.js"
 
 class SaveLinkService {
     async execute ({ title, link }) {
-        const titleValidator = new TitleValidator()
+        const titleValidator = new StringValidator()
         const linkValidator = new LinkValidator()
 
-        titleValidator.validate({ title })
+        titleValidator.validate({ data: title })
         linkValidator.validate({ link })
         
         const validateUrl = new ValidateUrl()
@@ -21,7 +21,7 @@ class SaveLinkService {
         const faviconLink = new FaviconLink()
         const urlFavicon = faviconLink.favicon({ link })
 
-        const validateLinkImg = await validateUrl.validate({
+        const { status: validateLinkImg } = await validateUrl.validate({
             link: urlFavicon, 
             options: { timeout: 10000 }
         })

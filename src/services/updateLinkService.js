@@ -1,5 +1,5 @@
 import Link from "../models/linkModel.js"
-import { TitleValidator, LinkValidator } from "../utils/validateReqData.js"
+import { StringValidator, LinkValidator } from "../utils/validateReqData.js"
 import { ValidateUrl } from "../utils/validateUrl.js"
 import { FaviconLink } from "../utils/faviconLink.js"
 
@@ -7,29 +7,29 @@ class UpdateLinkService {
     async execute({ id: id, title: title, link: link, items: items }) {
         const itemToBeUpdate = items[id]._id
 
-        const titleValidator = new TitleValidator()
-        titleValidator.validate(title)
+        const titleValidator = new StringValidator()
+        titleValidator.validate({ data: title, allowEmpty: true })
 
         const { validateLink, validateLinkImg, urlFavicon } = await (async () => {
             const linkValidator = new LinkValidator()
-            linkValidator.validate(link)
+            linkValidator.validate({ link, allowEmpty: true })
 
             const validateUrl = new ValidateUrl()
 
-            await validateUrl.validate({
+            const validateLink = link && await validateUrl.validate({
                 link, 
                 options: { timeout: 10000 }
             })
 
             const faviconLink = new FaviconLink()
-            const urlFavicon = faviconLink.favicon(link)
+            const urlFavicon = link && faviconLink.favicon({ link })
 
-            const validateLinkImg = await validateUrl.validate({
-                link: urlFavicon, 
+            const { status: validateLinkImg } = link &&  await validateUrl.validate({
+                link: urlFavicon,
                 options: { timeout: 10000 }
             })
 
-            return { validateLink: true, validateLinkImg, urlFavicon }
+            return { validateLink, validateLinkImg, urlFavicon }
         })()
 
         const updateItem = await Link.findOneAndUpdate({
